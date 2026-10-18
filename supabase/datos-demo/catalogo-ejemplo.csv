@@ -1,0 +1,11 @@
+sku,nombre,descripcion,variante,precio,costo,stock,ubicacion,categoria
+RCC-STK-010,Pack stickers Michis viajeros,10 stickers resistentes al agua,Unica,15.00,4.50,24,ALMACEN,Stickers
+RCC-STK-011,Pack stickers Gatos del barrio,8 stickers troquelados,Unica,15.00,4.50,18,ALMACEN,Stickers
+RCC-LAM-010,Lamina Michi lector,Impresion mate 250g,A4,35.00,12.00,12,ALMACEN,
+RCC-LAM-010,Lamina Michi lector,Impresion mate 250g,A3,55.00,19.00,8,ALMACEN,
+RCC-TAZ-010,Taza Primero el cafe,Ceramica 330ml,Unica,42.00,16.00,15,ALMACEN,
+RCC-LLA-010,Llavero michi de madera,Madera grabada 5cm,Unica,18.00,5.50,30,ALMACEN,
+RCC-TEX-010,Tote bag Miauchiverso,Tela cruda serigrafiada,Unica,49.00,20.00,10,ALMACEN,Textiles
+RCC-PAP-010,Libreta Planes del michi,80 hojas rayadas,Unica,32.00,11.00,20,ALMACEN,
+RCC-PEL-010,Peluche michi naranja,Peluche 25cm,Unica,79.00,34.00,6,ALMACEN,
+RCC-STK-012,Pack stickers michis viajeros,Casi igual al primero: sirve para probar la deteccion de duplicados,Unica,15.00,4.50,5,ALMACEN,
