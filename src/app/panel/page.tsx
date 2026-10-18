@@ -30,7 +30,7 @@ export default async function PaginaIndicadores({
         <p className="display text-lg text-ron-peligro">No pudimos cargar los indicadores</p>
         <p className="mt-1 text-sm">{error.message}</p>
         <p className="mt-3 text-xs texto-tenue">
-          Revisa que las migraciones de <code className="font-mono">supabase/migraciones/</code>{' '}
+          Revisa que las migraciones de <code className="font-mono">supabase/migrations/</code>{' '}
           estén aplicadas en el proyecto.
         </p>
       </div>

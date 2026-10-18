@@ -1,5 +1,12 @@
 # Resumen honesto del entregable
 
+**En vivo: https://ron-con-cola.vercel.app**
+**Código: https://github.com/KevinPinto123/RonConCola**
+
+El sitio está desplegado y es público. Hasta que corras
+`supabase/INSTALAR_TODO.sql` en tu proyecto de Supabase, muestra una pantalla
+que explica qué falta: la base todavía no tiene las tablas.
+
 Qué quedó funcionando, qué está probado y qué falta para que esto esté en vivo.
 
 ---

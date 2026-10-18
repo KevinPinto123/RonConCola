@@ -69,8 +69,9 @@ export function PantallaConfiguracion({ error }: { error?: string }) {
                 <strong>2.</strong> Completa los valores desde Supabase → Project Settings → API.
               </li>
               <li>
-                <strong>3.</strong> Corre las migraciones de{' '}
-                <code className="font-mono">supabase/migraciones/</code> en el editor SQL.
+                <strong>3.</strong> Pega{' '}
+                <code className="font-mono">supabase/INSTALAR_TODO.sql</code> en el editor
+                SQL de Supabase y ejecútalo.
               </li>
               <li>
                 <strong>4.</strong> Reinicia con <code className="font-mono">npm run dev</code>.
