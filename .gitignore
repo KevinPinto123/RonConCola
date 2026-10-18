@@ -13,3 +13,5 @@ next-env.d.ts
 # Supabase CLI (entorno local)
 supabase/.branches/
 supabase/.temp/
+
+.vercel
