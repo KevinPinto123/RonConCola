@@ -128,13 +128,22 @@ begin
     union all
     select total_centimos, fecha, 'presencial' as canal from fisicas
   ),
+  -- Serie completa de días, incluidos los que no tuvieron ventas.
+  -- Sin esto, un periodo con un solo día vendido se dibujaría como una
+  -- única barra ocupando todo el ancho, y no se vería la evolución real.
   por_dia as (
     select
-      to_char(date_trunc('day', fecha), 'YYYY-MM-DD') as dia,
-      sum(total_centimos)::int as total_centimos,
-      count(*)::int as operaciones
-    from todas
-    group by 1
+      to_char(d.dia, 'YYYY-MM-DD') as dia,
+      coalesce(sum(t.total_centimos), 0)::int as total_centimos,
+      count(t.fecha)::int as operaciones
+    from generate_series(
+           v_desde::date,
+           date_trunc('day', now())::date,
+           interval '1 day'
+         ) as d(dia)
+    left join todas t
+      on date_trunc('day', t.fecha)::date = d.dia::date
+    group by d.dia
   ),
   unidades as (
     select coalesce(sum(-m.delta), 0)::int as total

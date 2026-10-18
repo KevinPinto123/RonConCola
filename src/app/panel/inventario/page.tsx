@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { clienteServidor, perfilActual } from '@/lib/supabase/servidor';
 import { soles, numero } from '@/lib/dinero';
+import { fechaCorta } from '@/lib/fechas';
 import { OperacionesInventario } from '@/components/OperacionesInventario';
 import { TablaStock } from '@/components/TablaStock';
 import type { FilaStock, Ubicacion } from '@/lib/tipos';
@@ -149,7 +150,7 @@ export default async function PaginaInventario({
                 </div>
 
                 <div className="shrink-0 text-right text-xs texto-tenue">
-                  <p>{new Date(m.creado_en).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}</p>
+                  <p>{fechaCorta(m.creado_en)}</p>
                   <p>{m.responsable}</p>
                 </div>
               </li>

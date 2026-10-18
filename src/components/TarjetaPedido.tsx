@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { soles } from '@/lib/dinero';
+import { fechaHora } from '@/lib/fechas';
 import {
   confirmarPago,
   cancelarPedido,
@@ -57,12 +58,7 @@ export function TarjetaPedido({ pedido }: { pedido: PedidoResumen }) {
   const vencido =
     pedido.estado === 'pendiente_pago' && new Date(pedido.expira_en).getTime() < Date.now();
 
-  const fecha = new Date(pedido.creado_en).toLocaleString('es-PE', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const fecha = fechaHora(pedido.creado_en);
 
   // El teléfono tal cual lo dejó el cliente, listo para abrir el chat.
   const telefonoLimpio = pedido.cliente_telefono.replace(/[^0-9]/g, '');

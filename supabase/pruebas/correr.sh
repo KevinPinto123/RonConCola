@@ -44,10 +44,10 @@ correr() {
 
 echo "▸ Aplicando migraciones…"
 correr pruebas/00_stub_auth.sql
-correr migraciones/001_esquema.sql
-correr migraciones/002_funciones.sql
-correr migraciones/003_vistas_kpis_importacion.sql
-correr migraciones/004_seguridad.sql
+correr migrations/20261018000001_esquema.sql
+correr migrations/20261018000002_funciones.sql
+correr migrations/20261018000003_vistas_kpis_importacion.sql
+correr migrations/20261018000004_seguridad.sql
 
 echo "▸ Cargando datos de demostración…"
 correr datos-demo/semilla.sql

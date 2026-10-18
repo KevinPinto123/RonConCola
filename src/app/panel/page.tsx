@@ -145,7 +145,7 @@ export default async function PaginaIndicadores({
         <GraficoVentas datos={k.ventas_por_dia} />
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid items-start gap-4 lg:grid-cols-2">
         {/* --- Top productos --- */}
         <section className="tarjeta p-4 sm:p-5">
           <h2 className="display text-lg">Lo que más sale</h2>

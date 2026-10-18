@@ -94,20 +94,23 @@ on conflict (sku) do nothing;
 -- esto es el punto de partida del entorno de prueba, no una operación
 -- real del negocio que deba quedar en la bitácora.
 -- ------------------------------------------------------------
+-- Sólo tienda y almacén. La feria no lleva stock permanente: sus filas
+-- de inventario se crean solas cuando se traslada mercadería para un
+-- evento. Si las creáramos aquí en cero, el panel avisaría de doce
+-- "quiebres de stock" que en realidad no existen.
 insert into inventario (variante_id, ubicacion_id, cantidad, reservado, stock_minimo)
 select
   v.id,
   u.id,
   case u.codigo
     when 'TIENDA40' then (3 + (abs(hashtext(v.sku)) % 12))
-    when 'ALMACEN'  then (5 + (abs(hashtext(v.sku || 'alm')) % 25))
-    else 0
+    else (5 + (abs(hashtext(v.sku || 'alm')) % 25))
   end,
   0,
   case u.codigo when 'TIENDA40' then 3 else 5 end
 from variantes v
 cross join ubicaciones u
-where u.codigo in ('TIENDA40', 'ALMACEN', 'FERIA')
+where u.codigo in ('TIENDA40', 'ALMACEN')
 on conflict (variante_id, ubicacion_id) do nothing;
 
 -- Deja dos productos en rojo a propósito, para que el panel de

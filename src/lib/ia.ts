@@ -47,6 +47,11 @@ const PALABRAS_CLAVE: { categoria: string; palabras: string[] }[] = [
   { categoria: 'Papelería', palabras: ['libreta', 'cuaderno', 'postal', 'agenda', 'bloc', 'marcador', 'papeleria', 'papelería'] },
 ];
 
+/** "1 operación" / "3 operaciones": evita el clásico "1 operaciones". */
+function plural(cantidad: number, singular: string, plural_: string): string {
+  return `${numero(cantidad)} ${cantidad === 1 ? singular : plural_}`;
+}
+
 function sinTildes(texto: string): string {
   return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
@@ -215,33 +220,40 @@ function respuestaLocal(pregunta: string, k: Kpis): string {
   if (/vend|venta|factur|ingreso|plata|dinero/.test(p)) {
     partes.push(
       `En los últimos ${k.periodo_dias} días vendimos ${soles(k.ventas_totales_centimos)} ` +
-        `en ${numero(k.operaciones)} operaciones, con un ticket promedio de ${soles(k.ticket_promedio_centimos)}.`,
+        `en ${plural(k.operaciones, 'operación', 'operaciones')}, ` +
+        `con un ticket promedio de ${soles(k.ticket_promedio_centimos)}.`,
     );
   }
   if (/top|mas vendido|más vendido|mejor|estrella|popular/.test(p) && k.top_productos.length) {
     const t = k.top_productos[0];
-    partes.push(`Lo que más sale: ${t.producto}, con ${t.unidades} unidades (${soles(t.ingreso_centimos)}).`);
+    partes.push(
+      `Lo que más sale: ${t.producto}, con ${plural(t.unidades, 'unidad', 'unidades')} ` +
+        `(${soles(t.ingreso_centimos)}).`,
+    );
   }
   if (/stock|inventario|falta|reponer|quiebre|agot/.test(p)) {
     partes.push(
       k.stock_bajo.length
-        ? `Ojo con el stock: ${k.stock_bajo.length} productos están en o bajo su mínimo. El más crítico es ` +
-            `${k.stock_bajo[0].producto} en ${k.stock_bajo[0].ubicacion}, con ${k.stock_bajo[0].disponible} unidades.`
+        ? `Ojo con el stock: ${plural(k.stock_bajo.length, 'producto está', 'productos están')} ` +
+            `en o bajo su mínimo. El más crítico es ${k.stock_bajo[0].producto} en ` +
+            `${k.stock_bajo[0].ubicacion}, con ${plural(k.stock_bajo[0].disponible, 'unidad', 'unidades')}.`
         : 'El inventario está sano: ningún producto por debajo de su mínimo.',
     );
   }
   if (/pedido|pendiente|pago|verificar|recojo/.test(p)) {
     partes.push(
-      `Hay ${k.pedidos.por_verificar} pedidos esperando que verifiques el pago ` +
-        `(${soles(k.pedidos.monto_por_verificar)}) y ${k.pedidos.por_entregar} listos para recojo.`,
+      `Hay ${plural(k.pedidos.por_verificar, 'pedido esperando', 'pedidos esperando')} ` +
+        `que verifiques el pago (${soles(k.pedidos.monto_por_verificar)}) y ` +
+        `${plural(k.pedidos.por_entregar, 'listo', 'listos')} para recojo.`,
     );
   }
 
   if (!partes.length) {
     partes.push(
       `Resumen de los últimos ${k.periodo_dias} días: ${soles(k.ventas_totales_centimos)} vendidos en ` +
-        `${numero(k.operaciones)} operaciones, ${numero(k.inventario.unidades_en_stock)} unidades en stock y ` +
-        `${k.pedidos.por_verificar} pedidos por verificar.`,
+        `${plural(k.operaciones, 'operación', 'operaciones')}, ` +
+        `${plural(k.inventario.unidades_en_stock, 'unidad', 'unidades')} en stock y ` +
+        `${plural(k.pedidos.por_verificar, 'pedido', 'pedidos')} por verificar.`,
     );
   }
 

@@ -28,6 +28,9 @@ export default async function PaginaTienda() {
       .select('id, codigo, nombre, tipo, es_punto_recojo')
       .eq('es_punto_recojo', true)
       .eq('activa', true)
+      // Por tipo primero: el enum ordena tienda, almacen, feria, así que
+      // la tienda física queda como opción por defecto del desplegable.
+      .order('tipo')
       .order('nombre'),
   ]);
 
@@ -63,7 +66,7 @@ function EncabezadoTienda() {
           <Roncito tamano={38} animo="normal" className="text-ron-negro" />
           <span className="display text-lg leading-none text-ron-negro sm:text-xl">
             Ron con Cola
-            <span className="block text-[0.58rem] font-semibold tracking-[0.14em] opacity-70">
+            <span className="block whitespace-nowrap text-[0.5rem] font-semibold tracking-[0.12em] opacity-70 sm:text-[0.58rem] sm:tracking-[0.14em]">
               EL BAZAR DE MI PATA
             </span>
           </span>

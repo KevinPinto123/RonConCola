@@ -150,3 +150,52 @@ export function validarFila(fila: FilaCsv): ValidacionFila {
 
   return { valida: true, error: null };
 }
+
+/**
+ * Parecido entre dos nombres, de 0 a 1 (coeficiente de Dice sobre bigramas).
+ *
+ * Postgres ya detecta duplicados contra el catálogo existente, pero no ve
+ * las filas del propio archivo: si el CSV trae dos veces el mismo producto
+ * con el nombre apenas distinto, ambas pasarían. Esto cubre ese caso.
+ */
+export function similitudNombres(a: string, b: string): number {
+  const normalizar = (t: string) =>
+    t
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9ñ ]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const x = normalizar(a);
+  const y = normalizar(b);
+
+  if (!x || !y) return 0;
+  if (x === y) return 1;
+
+  const bigramas = (t: string) => {
+    const pares = new Map<string, number>();
+    for (let i = 0; i < t.length - 1; i++) {
+      const par = t.slice(i, i + 2);
+      pares.set(par, (pares.get(par) ?? 0) + 1);
+    }
+    return pares;
+  };
+
+  const bx = bigramas(x);
+  const by = bigramas(y);
+
+  let comunes = 0;
+  let totalX = 0;
+  bx.forEach((n, par) => {
+    totalX += n;
+    comunes += Math.min(n, by.get(par) ?? 0);
+  });
+
+  let totalY = 0;
+  by.forEach((n) => { totalY += n; });
+
+  if (totalX + totalY === 0) return 0;
+  return (2 * comunes) / (totalX + totalY);
+}

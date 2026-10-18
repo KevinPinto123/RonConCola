@@ -12,6 +12,7 @@ type FilaRevision = {
   categoria_confianza: number | null;
   motivo_ia: string | null;
   duplicado: { variante_id: string; producto: string; score: number } | null;
+  repetida_en_archivo: { fila: number; nombre: string; score: number } | null;
   decision: string;
   error: string | null;
 };
@@ -275,6 +276,22 @@ export function ImportadorCsv({ iaActiva }: { iaActiva: boolean }) {
                       <p className="mt-1 text-[0.7rem] texto-tenue">{f.motivo_ia}</p>
                     )}
                   </div>
+
+                  {f.repetida_en_archivo && (
+                    <div className="tarjeta-sutil border-ron-alerta bg-ron-amarillo-claro p-2">
+                      <p className="text-xs font-bold">
+                        ⚠ Repetido dentro del archivo (
+                        {Math.round(f.repetida_en_archivo.score * 100)}% de parecido)
+                      </p>
+                      <p className="mt-0.5 text-xs">
+                        Ya venía en la fila #{f.repetida_en_archivo.fila}:{' '}
+                        <strong>{f.repetida_en_archivo.nombre}</strong>
+                      </p>
+                      <p className="mt-0.5 text-[0.7rem] texto-tenue">
+                        Se crearían dos productos iguales. Déjalo en &ldquo;Omitir&rdquo;.
+                      </p>
+                    </div>
+                  )}
 
                   {f.duplicado && (
                     <div className="tarjeta-sutil bg-ron-amarillo-claro p-2">

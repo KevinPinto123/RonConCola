@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { clienteServidor, perfilActual } from '@/lib/supabase/servidor';
 import { sugerirCategorias } from '@/lib/ia';
-import { validarFila, type FilaCsv } from '@/lib/csv';
+import { validarFila, similitudNombres, type FilaCsv } from '@/lib/csv';
 
 /**
  * POST /api/importar/analizar
@@ -100,9 +100,53 @@ export async function POST(peticion: Request) {
     );
   }
 
+  // --- Duplicados dentro del propio archivo ---
+  // Postgres compara contra el catálogo ya guardado, pero no ve las otras
+  // filas del CSV. Si alguien pegó dos veces el mismo producto con el
+  // nombre apenas cambiado, aquí se detecta.
+  const repetidaEnArchivo = new Map<number, { fila: number; nombre: string; score: number }>();
+
+  // Un mismo SKU repetido NO es un error: así se declaran las variantes
+  // (una lámina en A4 y en A3 comparten SKU base). Lo sospechoso es que
+  // se repitan SKU y variante, o que dos nombres casi iguales compartan
+  // la misma presentación.
+  const clave = (fila_num: number) => {
+    const d = validadas.find((v) => v.fila_num === fila_num)?.datos ?? {};
+    return {
+      sku: (d.sku ?? '').trim().toUpperCase(),
+      variante: (d.variante ?? '').trim().toLowerCase() || 'única',
+    };
+  };
+
+  for (let i = 0; i < aClasificar.length; i++) {
+    for (let j = 0; j < i; j++) {
+      const a = aClasificar[i];
+      const b = aClasificar[j];
+      const ka = clave(a.fila_num);
+      const kb = clave(b.fila_num);
+
+      const mismaVariante = ka.variante === kb.variante;
+      let score = 0;
+
+      if (ka.sku === kb.sku && mismaVariante) {
+        score = 1; // exactamente la misma fila dos veces
+      } else if (mismaVariante) {
+        score = similitudNombres(a.nombre, b.nombre);
+      }
+
+      if (score >= 0.82) {
+        const previo = repetidaEnArchivo.get(a.fila_num);
+        if (!previo || score > previo.score) {
+          repetidaEnArchivo.set(a.fila_num, { fila: b.fila_num, nombre: b.nombre, score });
+        }
+      }
+    }
+  }
+
   const aInsertar = validadas.map((f) => {
     const sugerencia = sugerencias.find((s) => s.fila_num === f.fila_num);
     const duplicado = duplicados.get(f.fila_num);
+    const repetida = repetidaEnArchivo.get(f.fila_num);
 
     return {
       importacion_id: importacion.id,
@@ -116,7 +160,8 @@ export async function POST(peticion: Request) {
       duplicado_score: duplicado?.score ?? null,
       // Propuesta inicial, siempre modificable por la persona que revisa:
       // lo inválido se omite, lo muy parecido a algo existente también.
-      decision: !f.valida ? 'omitir' : duplicado && duplicado.score >= 0.8 ? 'omitir' : 'crear',
+      decision:
+        !f.valida || repetida || (duplicado && duplicado.score >= 0.8) ? 'omitir' : 'crear',
       error: f.error,
     };
   });
@@ -138,6 +183,7 @@ export async function POST(peticion: Request) {
       categoria_confianza: f.categoria_confianza,
       motivo_ia: f.motivo_ia,
       duplicado: duplicados.get(f.fila_num) ?? null,
+      repetida_en_archivo: repetidaEnArchivo.get(f.fila_num) ?? null,
       decision: f.decision,
       error: f.error,
     })),
