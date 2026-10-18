@@ -170,6 +170,30 @@ Recorrido de 5 minutos que ejercita el flujo completo:
    `supabase/datos-demo/catalogo-ejemplo.csv`. Fíjate en que detecta la última fila
    como duplicado de la primera.
 
+### Probar todo en local, sin tocar tu proyecto de Supabase
+
+Si quieres ver el sistema completo funcionando antes de configurar el proyecto
+alojado, la CLI levanta un Supabase entero en tu máquina (necesita Docker):
+
+```bash
+npx supabase start          # la primera vez descarga las imágenes: tarda
+npx supabase db reset       # aplica las migraciones + los datos de demostración
+npx supabase status         # muestra API URL y PUBLISHABLE_KEY locales
+```
+
+Copia esos dos valores a `.env.local` (o a un `.env.development.local` aparte) y
+arranca con `npm run dev`. Crea tu usuario local así:
+
+```bash
+curl -X POST "http://127.0.0.1:54321/auth/v1/admin/users"   -H "apikey: <SECRET_KEY de supabase status>"   -H "Authorization: Bearer <SECRET_KEY de supabase status>"   -H "Content-Type: application/json"   -d '{"email":"tu@correo.com","password":"UnaClaveSegura1!","email_confirm":true,
+       "user_metadata":{"nombre":"Tu nombre","rol":"admin"}}'
+```
+
+Para apagarlo: `npx supabase stop`.
+
+> Ojo: `supabase db reset` **borra y recrea** la base local. Nunca lo corras
+> apuntando a producción.
+
 ### Pruebas automáticas
 
 Con Docker corriendo:
